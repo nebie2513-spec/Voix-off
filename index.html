@@ -1,0 +1,1197 @@
+<!DOCTYPE html>
+<html lang="fr" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VoiceAI Studio - Voix Off & Clonage Vocal IA</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Plus Jakarta Sans', 'sans-serif'],
+                    },
+                    colors: {
+                        brand: {
+                            50: '#f5f3ff',
+                            100: '#ede9fe',
+                            400: '#a78bfa',
+                            500: '#8b5cf6',
+                            600: '#7c3aed',
+                            700: '#6d28d9',
+                            900: '#4c1d95',
+                        },
+                        darkbg: '#0B0F17',
+                        darkcard: '#131927',
+                        darkborder: '#1E293B'
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            background-color: #0B0F17;
+            color: #F8FAFC;
+        }
+        .glass-panel {
+            background: rgba(19, 25, 39, 0.7);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+        .glass-card {
+            background: rgba(30, 41, 59, 0.4);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+        .gradient-text {
+            background: linear-gradient(135deg, #A855F7 0%, #6366F1 50%, #EC4899 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .gradient-btn {
+            background: linear-gradient(135deg, #7C3AED 0%, #4F46E5 100%);
+            transition: all 0.2s ease;
+        }
+        .gradient-btn:hover {
+            opacity: 0.92;
+            transform: translateY(-1px);
+            box-shadow: 0 10px 25px -5px rgba(124, 58, 237, 0.4);
+        }
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #0B0F17;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #334155;
+            border-radius: 9999px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #64748B;
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col font-sans antialiased text-slate-100">
+
+    <!-- Navigation Header -->
+    <header class="sticky top-0 z-50 glass-panel border-b border-slate-800/80 px-4 lg:px-8 py-3">
+        <div class="max-w-7xl mx-auto flex items-center justify-between">
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-violet-600 to-indigo-500 flex items-center justify-center shadow-lg shadow-violet-500/30">
+                    <i class="fa-solid font-bold fa-wand-magic-sparkles text-white text-lg"></i>
+                </div>
+                <div>
+                    <h1 class="text-xl font-bold tracking-tight flex items-center gap-2">
+                        <span>VoiceAI</span> <span class="text-xs px-2 py-0.5 rounded-full bg-violet-500/20 text-violet-300 font-semibold border border-violet-500/30">Studio Pro</span>
+                    </h1>
+                    <p class="text-xs text-slate-400">Voix Off Ultra-Réaliste & Clonage Vocal IA</p>
+                </div>
+            </div>
+
+            <!-- Main Tabs -->
+            <nav class="hidden md:flex items-center gap-1 bg-slate-900/80 p-1 rounded-xl border border-slate-800">
+                <button onclick="switchTab('studio')" id="tab-btn-studio" class="tab-btn px-4 py-2 rounded-lg text-sm font-medium transition-all flex items-center gap-2 bg-violet-600 text-white shadow-md">
+                    <i class="fa-solid fa-microphone-lines text-violet-200"></i> Studio Voix Off
+                </button>
+                <button onclick="switchTab('clone')" id="tab-btn-clone" class="tab-btn px-4 py-2 rounded-lg text-sm font-medium text-slate-400 hover:text-slate-200 transition-all flex items-center gap-2">
+                    <i class="fa-solid fa-dna text-pink-400"></i> Clonage Vocal
+                </button>
+                <button onclick="switchTab('dialogue')" id="tab-btn-dialogue" class="tab-btn px-4 py-2 rounded-lg text-sm font-medium text-slate-400 hover:text-slate-200 transition-all flex items-center gap-2">
+                    <i class="fa-solid fa-users text-cyan-400"></i> Multi-Locuteurs
+                </button>
+                <button onclick="switchTab('library')" id="tab-btn-library" class="tab-btn px-4 py-2 rounded-lg text-sm font-medium text-slate-400 hover:text-slate-200 transition-all flex items-center gap-2">
+                    <i class="fa-solid fa-folder-open text-amber-400"></i> Galerie
+                </button>
+            </nav>
+
+            <div class="flex items-center gap-3">
+                <div class="hidden lg:flex items-center gap-2 px-3 py-1.5 rounded-lg bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-xs font-medium">
+                    <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+                    Moteur Gemini 2.5 Active
+                </div>
+            </div>
+        </div>
+
+        <!-- Mobile Navigation Tabs -->
+        <div class="flex md:hidden items-center justify-around mt-3 pt-2 border-t border-slate-800/80 text-xs">
+            <button onclick="switchTab('studio')" id="mob-btn-studio" class="px-2 py-1.5 text-violet-400 font-semibold flex flex-col items-center gap-1">
+                <i class="fa-solid fa-microphone-lines text-base"></i> Studio
+            </button>
+            <button onclick="switchTab('clone')" id="mob-btn-clone" class="px-2 py-1.5 text-slate-400 flex flex-col items-center gap-1">
+                <i class="fa-solid fa-dna text-base"></i> Clonage
+            </button>
+            <button onclick="switchTab('dialogue')" id="mob-btn-dialogue" class="px-2 py-1.5 text-slate-400 flex flex-col items-center gap-1">
+                <i class="fa-solid fa-users text-base"></i> Dialogue
+            </button>
+            <button onclick="switchTab('library')" id="mob-btn-library" class="px-2 py-1.5 text-slate-400 flex flex-col items-center gap-1">
+                <i class="fa-solid fa-folder-open text-base"></i> Galerie
+            </button>
+        </div>
+    </header>
+
+    <!-- Toast Notification Container -->
+    <div id="toast-container" class="fixed bottom-5 right-5 z-50 flex flex-col gap-2 pointer-events-none"></div>
+
+    <!-- Main Content Area -->
+    <main class="flex-1 max-w-7xl w-full mx-auto p-4 md:p-6 lg:p-8 space-y-6">
+
+        <!-- ================= TAB 1: STUDIO VOIX OFF ================= -->
+        <section id="tab-studio" class="space-y-6">
+            <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                <div>
+                    <h2 class="text-2xl font-bold text-white flex items-center gap-2">
+                        Studio de Synthèse Vocale Ultra-Réaliste
+                    </h2>
+                    <p class="text-sm text-slate-400">Convertissez du texte en voix off vivante avec inflexions naturelles, émotions et timbre humain.</p>
+                </div>
+                <button onclick="generateScriptWithAI()" class="self-start md:self-auto px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-200 text-xs font-semibold flex items-center gap-2 transition">
+                    <i class="fa-solid fa-wand-magic-sparkles text-amber-400"></i> Rédiger un Script avec l'IA
+                </button>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+                <!-- Text Input Panel -->
+                <div class="lg:col-span-7 space-y-4">
+                    <div class="glass-panel rounded-2xl p-5 border border-slate-800 space-y-4">
+                        <div class="flex items-center justify-between">
+                            <label for="tts-text" class="text-sm font-semibold text-slate-200 flex items-center gap-2">
+                                <i class="fa-solid fa-align-left text-violet-400"></i> Texte de la Voix Off
+                            </label>
+                            <span id="char-count" class="text-xs text-slate-500">0 / 2000 caractères</span>
+                        </div>
+
+                        <div class="relative">
+                            <textarea id="tts-text" rows="8" placeholder="Saisissez ici le texte à transformer en voix off... Exemple : Bienvenue dans cette nouvelle vidéo ! Aujourd'hui nous allons découvrir ensemble les secrets de l'IA." 
+                                class="w-full bg-slate-950/70 border border-slate-800 rounded-xl p-4 text-slate-100 placeholder-slate-500 focus:ring-2 focus:ring-violet-500 focus:border-transparent resize-none text-sm leading-relaxed outline-none transition"></textarea>
+                            
+                            <!-- AI Quick Assist Bar -->
+                            <div class="flex flex-wrap items-center gap-2 mt-2 pt-2 border-t border-slate-800/80">
+                                <span class="text-xs text-slate-500 font-medium">Assistant Texte :</span>
+                                <button onclick="enhanceText('hook')" class="px-2.5 py-1 rounded-md bg-slate-800/90 hover:bg-violet-900/30 hover:border-violet-700/50 border border-slate-700/80 text-xs text-slate-300 transition">✨ Accroche Captivante</button>
+                                <button onclick="enhanceText('natural')" class="px-2.5 py-1 rounded-md bg-slate-800/90 hover:bg-violet-900/30 hover:border-violet-700/50 border border-slate-700/80 text-xs text-slate-300 transition">🗣️ Pauses & Intonations</button>
+                                <button onclick="enhanceText('ad')" class="px-2.5 py-1 rounded-md bg-slate-800/90 hover:bg-violet-900/30 hover:border-violet-700/50 border border-slate-700/80 text-xs text-slate-300 transition">📢 Style Publicitaire</button>
+                            </div>
+                        </div>
+
+                        <!-- Generation Controls -->
+                        <div class="flex items-center justify-between pt-2">
+                            <button onclick="clearTtsText()" class="px-3 py-1.5 rounded-lg text-slate-400 hover:text-slate-200 text-xs font-medium transition">
+                                <i class="fa-solid fa-trash-can mr-1"></i> Effacer
+                            </button>
+                            
+                            <button id="btn-generate-tts" onclick="generateSpeech()" class="gradient-btn px-6 py-3 rounded-xl text-white font-semibold text-sm flex items-center gap-2 shadow-lg">
+                                <i class="fa-solid fa-play text-xs"></i> Générer la Voix Off
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Voice Settings & Parameters Panel -->
+                <div class="lg:col-span-5 space-y-4">
+                    <div class="glass-panel rounded-2xl p-5 border border-slate-800 space-y-5">
+                        <h3 class="text-sm font-bold text-slate-200 uppercase tracking-wider flex items-center gap-2">
+                            <i class="fa-solid fa-sliders text-indigo-400"></i> Paramètres Vocal
+                        </h3>
+
+                        <!-- Voice Profile Selector -->
+                        <div class="space-y-2">
+                            <label class="text-xs font-semibold text-slate-300 flex items-center justify-between">
+                                <span>Profil de Voix IA</span>
+                                <span class="text-[11px] text-violet-400 font-normal">28 Comédiens Virtuels</span>
+                            </label>
+                            <select id="voice-select" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2.5 text-xs text-slate-200 focus:ring-2 focus:ring-violet-500 outline-none">
+                                <optgroup label="🇫🇷 Voix Françaises - Féminines">
+                                    <option value="Aoede" data-style="Breezy & Chaleureuse">Aoede - Dynamique, Douce & Naturelle</option>
+                                    <option value="Kore" data-style="Pro & Déterminée">Kore - Professionnelle, Claire & Assurée</option>
+                                    <option value="Leda" data-style="Jeune & Énergique">Leda - Pétillante, Jeune & Amicale</option>
+                                    <option value="Callirrhoe" data-style="Calme & Relax">Callirrhoe - Posee, Apaisante & Podcast</option>
+                                    <option value="Autonoe" data-style="Lumineuse">Autonoe - Claire & Documentaire</option>
+                                    <option value="Despina" data-style="Lisse & Élégante">Despina - Haut de Gamme, Pub & Luxe</option>
+                                    <option value="Sulafat" data-style="Chaleureuse">Sulafat - Storytelling & Livres Audio</option>
+                                </optgroup>
+                                <optgroup label="🇫🇷 Voix Françaises - Masculines">
+                                    <option value="Zephyr" data-style="Brillant & Dynamique" selected>Zephyr - Énergique, Publicité & YouTube</option>
+                                    <option value="Puck" data-style="Enthousiaste">Puck - Amical, Chaleureux & Tuto</option>
+                                    <option value="Charon" data-style="Informatif & Grave">Charon - Voix Grave, Journal & Actu</option>
+                                    <option value="Fenrir" data-style="Captivant & Intropuisant">Fenrir - Puissant, Bande-annonce & Cinéma</option>
+                                    <option value="Orus" data-style="Ferme & Captivant">Orus - Corporatif & Formations</option>
+                                    <option value="Iapetus" data-style="Clair & Posé">Iapetus - Narrateur & Livres Audio</option>
+                                    <option value="Algenib" data-style="Texturée & Charismatique">Algenib - Profonde, Documentaire & Prestige</option>
+                                </optgroup>
+                                <optgroup id="cloned-voices-group" label="🧬 Mes Voix Clonées" disabled>
+                                    <option value="" disabled>Aucune voix clonée disponible</option>
+                                </optgroup>
+                            </select>
+                        </div>
+
+                        <!-- Emotion / Tone Selector -->
+                        <div class="space-y-2">
+                            <label class="text-xs font-semibold text-slate-300">Émotion & Ton de Voix</label>
+                            <div class="grid grid-cols-2 gap-2">
+                                <button type="button" onclick="setTone('Neutre & Naturel')" class="tone-btn text-xs py-2 px-3 rounded-lg bg-violet-600/30 border border-violet-500 text-violet-200 font-medium text-left flex items-center gap-1.5">
+                                    <i class="fa-solid fa-circle-dot text-[10px]"></i> Naturel
+                                </button>
+                                <button type="button" onclick="setTone('Enthousiaste et dynamique pour vidéo dynamique')" class="tone-btn text-xs py-2 px-3 rounded-lg bg-slate-900 border border-slate-700 text-slate-300 text-left hover:border-slate-600 flex items-center gap-1.5">
+                                    <i class="fa-solid fa-fire text-[10px] text-amber-400"></i> Enthousiaste
+                                </button>
+                                <button type="button" onclick="setTone('Chuchoté et confidentiel avec une grande proximité')" class="tone-btn text-xs py-2 px-3 rounded-lg bg-slate-900 border border-slate-700 text-slate-300 text-left hover:border-slate-600 flex items-center gap-1.5">
+                                    <i class="fa-solid fa-whisper text-[10px] text-teal-400"></i> Confidentiel
+                                </button>
+                                <button type="button" onclick="setTone('Sérieux, solennel et captivant')" class="tone-btn text-xs py-2 px-3 rounded-lg bg-slate-900 border border-slate-700 text-slate-300 text-left hover:border-slate-600 flex items-center gap-1.5">
+                                    <i class="fa-solid fa-briefcase text-[10px] text-indigo-400"></i> Corporatif
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Diction Speed & Pitch -->
+                        <div class="space-y-3 pt-2 border-t border-slate-800">
+                            <div>
+                                <div class="flex justify-between text-xs font-medium mb-1">
+                                    <span class="text-slate-300">Vitesse de Diction</span>
+                                    <span id="speed-val" class="text-violet-400 font-semibold">1.0x</span>
+                                </div>
+                                <input type="range" id="speed-slider" min="0.75" max="1.3" step="0.05" value="1.0" oninput="document.getElementById('speed-val').innerText = this.value + 'x'"
+                                    class="w-full accent-violet-500 bg-slate-800 h-1.5 rounded-lg cursor-pointer">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Audio Result Visualizer Player -->
+            <div id="audio-result-card" class="hidden glass-panel rounded-2xl p-6 border border-violet-500/30 bg-gradient-to-r from-violet-950/20 via-slate-900/80 to-slate-900/80 space-y-4">
+                <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                    <div class="flex items-center gap-3">
+                        <button id="btn-play-pause" onclick="togglePlayAudio()" class="w-12 h-12 rounded-full bg-violet-600 hover:bg-violet-500 text-white flex items-center justify-center text-lg shadow-lg shadow-violet-600/40 transition">
+                            <i id="play-icon" class="fa-solid fa-play ml-0.5"></i>
+                        </button>
+                        <div>
+                            <h4 id="result-title" class="font-bold text-slate-100 text-sm">Voix Off Générée</h4>
+                            <p id="result-details" class="text-xs text-slate-400">Voix: Zephyr • Format: WAV 24kHz Mono</p>
+                        </div>
+                    </div>
+
+                    <div class="flex items-center gap-2">
+                        <a id="download-audio-link" download="voix_off_ia.wav" href="#" class="px-4 py-2 rounded-xl bg-violet-600/20 border border-violet-500/40 hover:bg-violet-600/30 text-violet-300 text-xs font-semibold flex items-center gap-2 transition">
+                            <i class="fa-solid fa-download"></i> Télécharger WAV
+                        </a>
+                        <button onclick="copyAudioScript()" class="px-3 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-semibold transition" title="Copier le texte">
+                            <i class="fa-solid fa-copy"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Canvas Visualizer -->
+                <div class="relative w-full h-16 bg-slate-950/80 rounded-xl overflow-hidden border border-slate-800 flex items-center px-4">
+                    <canvas id="waveform-canvas" class="w-full h-full"></canvas>
+                </div>
+
+                <!-- Hidden Native Audio Element -->
+                <audio id="main-audio-player" class="hidden"></audio>
+            </div>
+        </section>
+
+
+        <!-- ================= TAB 2: CLONAGE VOCAL ================= -->
+        <section id="tab-clone" class="hidden space-y-6">
+            <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                <div>
+                    <h2 class="text-2xl font-bold text-white flex items-center gap-2">
+                        <i class="fa-solid fa-dna text-pink-500"></i> Studio de Clonage Vocal Instantané
+                    </h2>
+                    <p class="text-sm text-slate-400">Enregistrez un extrait de votre voix ou téléversez un fichier pour créer votre jumeau vocal IA.</p>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+                <!-- Voice Sampling Panel -->
+                <div class="lg:col-span-6 space-y-4">
+                    <div class="glass-panel rounded-2xl p-6 border border-slate-800 space-y-5">
+                        <h3 class="text-sm font-bold text-slate-200 uppercase tracking-wider flex items-center gap-2">
+                            <span>1. Échantillon Audio de Référence</span>
+                        </h3>
+
+                        <!-- Audio Source Tabs (Microphone / Upload) -->
+                        <div class="flex gap-2 p-1 bg-slate-950 rounded-xl border border-slate-800">
+                            <button onclick="setCloneInputMode('mic')" id="clone-mode-mic" class="flex-1 py-2 rounded-lg text-xs font-semibold bg-violet-600 text-white transition">
+                                <i class="fa-solid fa-microphone mr-1"></i> Micro (Direct)
+                            </button>
+                            <button onclick="setCloneInputMode('file')" id="clone-mode-file" class="flex-1 py-2 rounded-lg text-xs font-semibold text-slate-400 hover:text-slate-200 transition">
+                                <i class="fa-solid fa-upload mr-1"></i> Téléverser (.mp3 / .wav)
+                            </button>
+                        </div>
+
+                        <!-- Recording UI -->
+                        <div id="mic-input-box" class="space-y-4">
+                            <div class="p-6 border-2 border-dashed border-slate-800 rounded-xl bg-slate-950/50 text-center space-y-3">
+                                <div class="w-16 h-16 rounded-full bg-violet-500/10 border border-violet-500/20 text-violet-400 mx-auto flex items-center justify-center text-xl">
+                                    <i id="rec-mic-icon" class="fa-solid fa-microphone"></i>
+                                </div>
+                                <p id="rec-status-text" class="text-xs text-slate-400">Lisez la phrase ci-dessous à haute voix (10 à 15 secondes) :</p>
+                                <p class="text-xs italic bg-slate-900 p-3 rounded-lg text-slate-300 border border-slate-800">
+                                    « Bonjour, ceci est un extrait audio pour l'entraînement de mon jumeau vocal IA. La qualité du micro et l'articulation sont essentielles pour un rendu ultra-naturel. »
+                                </p>
+                                <div class="pt-2">
+                                    <button id="btn-toggle-record" onclick="toggleMicrophoneRecord()" class="px-5 py-2.5 rounded-xl bg-pink-600 hover:bg-pink-500 text-white font-semibold text-xs transition inline-flex items-center gap-2 shadow-lg shadow-pink-600/30">
+                                        <i class="fa-solid fa-circle text-xs animate-pulse"></i> Commencer l'Enregistrement
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Upload UI -->
+                        <div id="file-input-box" class="hidden space-y-4">
+                            <div class="p-8 border-2 border-dashed border-slate-800 rounded-xl bg-slate-950/50 text-center space-y-3 cursor-pointer hover:border-violet-500/50 transition" onclick="document.getElementById('clone-file-upload').click()">
+                                <i class="fa-solid fa-cloud-arrow-up text-3xl text-violet-400"></i>
+                                <p class="text-xs text-slate-300 font-medium">Déposez votre fichier audio ici ou <span class="text-violet-400 underline">parcourez</span></p>
+                                <p class="text-[11px] text-slate-500">Formats supportés: MP3, WAV, M4A, OGG (Max 20 Mo)</p>
+                                <input type="file" id="clone-file-upload" accept="audio/*" class="hidden" onchange="handleAudioUpload(event)">
+                            </div>
+                        </div>
+
+                        <!-- Sample Audio Preview -->
+                        <div id="sample-preview-container" class="hidden space-y-2 p-3 bg-slate-900 rounded-xl border border-slate-800">
+                            <div class="flex items-center justify-between text-xs">
+                                <span class="text-slate-300 font-medium"><i class="fa-solid fa-music text-pink-400 mr-1"></i> Échantillon Prêt</span>
+                                <span id="sample-duration" class="text-slate-500">00:12</span>
+                            </div>
+                            <audio id="clone-sample-audio" controls class="w-full h-8 rounded"></audio>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Voice Profile Analysis & Synthesis -->
+                <div class="lg:col-span-6 space-y-4">
+                    <div class="glass-panel rounded-2xl p-6 border border-slate-800 space-y-5">
+                        <h3 class="text-sm font-bold text-slate-200 uppercase tracking-wider flex items-center gap-2">
+                            <span>2. Nommer & Synthétiser avec la Voix Clonée</span>
+                        </h3>
+
+                        <div class="space-y-3">
+                            <div>
+                                <label class="text-xs font-semibold text-slate-300">Nom de la Voix Clonée</label>
+                                <input type="text" id="clone-voice-name" placeholder="Ex: Ma Voix Studio - Alexandre" value="Ma Voix Clonée #1" 
+                                    class="w-full mt-1 bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs text-slate-200 outline-none focus:ring-2 focus:ring-pink-500">
+                            </div>
+
+                            <button id="btn-analyze-clone" onclick="analyzeAndSaveVoiceClone()" class="w-full py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-200 text-xs font-semibold flex items-center justify-center gap-2 transition">
+                                <i class="fa-solid fa-microchip text-pink-400"></i> Analyser & Créer le Profil Vocal IA
+                            </button>
+                        </div>
+
+                        <div class="pt-3 border-t border-slate-800 space-y-3">
+                            <label class="text-xs font-semibold text-slate-300">Texte à faire prononcer par votre Voix Clonée</label>
+                            <textarea id="clone-target-text" rows="4" placeholder="Saisissez ici le texte que votre voix clonée doit énoncer..." 
+                                class="w-full bg-slate-950/70 border border-slate-800 rounded-xl p-3 text-slate-100 placeholder-slate-500 text-xs focus:ring-2 focus:ring-pink-500 resize-none outline-none"></textarea>
+
+                            <button id="btn-synthesize-clone" onclick="generateClonedSpeech()" class="w-full py-3 rounded-xl bg-gradient-to-r from-pink-600 to-violet-600 hover:from-pink-500 hover:to-violet-500 text-white font-semibold text-xs flex items-center justify-center gap-2 shadow-lg shadow-pink-600/20 transition">
+                                <i class="fa-solid fa-wand-magic text-xs"></i> Générer avec Ma Voix Clonée
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+
+        <!-- ================= TAB 3: MULTI-LOCUTEURS ================= -->
+        <section id="tab-dialogue" class="hidden space-y-6">
+            <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                <div>
+                    <h2 class="text-2xl font-bold text-white flex items-center gap-2">
+                        <i class="fa-solid fa-users text-cyan-400"></i> Studio Multi-Locuteurs & Podcasts
+                    </h2>
+                    <p class="text-sm text-slate-400">Créez des échanges, interviews et pièces de théâtre audio avec plusieurs voix en une seule génération.</p>
+                </div>
+                <button onclick="loadDialogueTemplate()" class="px-3 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-semibold border border-slate-700 transition">
+                    💡 Charger un Exemple de Podcast
+                </button>
+            </div>
+
+            <div class="glass-panel rounded-2xl p-6 border border-slate-800 space-y-6">
+                <!-- Character Voices Setup -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 p-4 bg-slate-950/60 rounded-xl border border-slate-800">
+                    <div class="space-y-2">
+                        <label class="text-xs font-bold text-violet-400 uppercase tracking-wider">Locuteur 1 (Interviewer)</label>
+                        <div class="flex gap-2">
+                            <input type="text" id="speaker1-name" value="Marc" class="w-1/3 bg-slate-900 border border-slate-700 rounded-lg px-2.5 py-1.5 text-xs text-slate-200">
+                            <select id="speaker1-voice" class="w-2/3 bg-slate-900 border border-slate-700 rounded-lg px-2.5 py-1.5 text-xs text-slate-200">
+                                <option value="Zephyr">Zephyr (Masculin - Pub & Dynamic)</option>
+                                <option value="Charon">Charon (Masculin - Grave & Pro)</option>
+                                <option value="Fenrir">Fenrir (Masculin - Intense)</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="space-y-2">
+                        <label class="text-xs font-bold text-pink-400 uppercase tracking-wider">Locuteur 2 (Invité)</label>
+                        <div class="flex gap-2">
+                            <input type="text" id="speaker2-name" value="Sophie" class="w-1/3 bg-slate-900 border border-slate-700 rounded-lg px-2.5 py-1.5 text-xs text-slate-200">
+                            <select id="speaker2-voice" class="w-2/3 bg-slate-900 border border-slate-700 rounded-lg px-2.5 py-1.5 text-xs text-slate-200">
+                                <option value="Aoede">Aoede (Féminin - Chaleureuse)</option>
+                                <option value="Kore">Kore (Féminin - Assurée)</option>
+                                <option value="Leda">Leda (Féminin - Jeune)</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Dialogue Editor -->
+                <div class="space-y-2">
+                    <label class="text-xs font-semibold text-slate-300">Script du Dialogue (Spécifier le nom devant chaque réplique)</label>
+                    <textarea id="dialogue-script" rows="8" class="w-full bg-slate-950/80 border border-slate-800 rounded-xl p-4 text-slate-100 font-mono text-xs leading-relaxed focus:ring-2 focus:ring-cyan-500 outline-none resize-none">Marc: Bonjour Sophie, bienvenue sur notre plateau aujourd'hui !
+Sophie: Merci Marc, c'est un plaisir d'être avec vous pour parler d'intelligence artificielle.
+Marc: Dites-nous, quelles sont les avancées les plus impressionnantes cette année ?
+Sophie: Sans hésitation, la synthèse vocale ultra-réaliste et la capacite à capturer les émotions humaines !</textarea>
+                </div>
+
+                <div class="flex justify-end">
+                    <button id="btn-generate-dialogue" onclick="generateMultiSpeakerAudio()" class="px-6 py-3 rounded-xl bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-500 hover:to-blue-500 text-white font-semibold text-xs flex items-center gap-2 shadow-lg shadow-cyan-600/20 transition">
+                        <i class="fa-solid fa-comments text-xs"></i> Générer la Conversation Audio Complete
+                    </button>
+                </div>
+            </div>
+        </section>
+
+
+        <!-- ================= TAB 4: GALERIE AUDIO ================= -->
+        <section id="tab-library" class="hidden space-y-6">
+            <div class="flex items-center justify-between">
+                <div>
+                    <h2 class="text-2xl font-bold text-white flex items-center gap-2">
+                        <i class="fa-solid fa-folder-open text-amber-400"></i> Historique & Bibliothèque Audio
+                    </h2>
+                    <p class="text-sm text-slate-400">Retrouvez toutes vos créations vocales, rééoutez et téléchargez les fichiers WAV.</p>
+                </div>
+                <button onclick="clearAudioHistory()" class="px-3 py-1.5 rounded-xl bg-slate-800 hover:bg-red-950/40 text-slate-400 hover:text-red-400 border border-slate-700 text-xs font-medium transition">
+                    <i class="fa-solid fa-trash mr-1"></i> Vider la galerie
+                </button>
+            </div>
+
+            <div id="library-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                <!-- Dynamic Items Inserted via JS -->
+                <div class="col-span-full text-center py-12 glass-panel rounded-2xl border border-slate-800">
+                    <i class="fa-solid fa-file-audio text-4xl text-slate-600 mb-3 block"></i>
+                    <p class="text-slate-400 text-sm">Aucune voix off générée pour le moment.</p>
+                    <p class="text-slate-600 text-xs mt-1">Vos pistes audio apparaîtront ici automatiquement.</p>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- AI Script Generator Modal -->
+    <div id="script-modal" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm hidden flex items-center justify-center p-4">
+        <div class="glass-panel w-full max-w-xl rounded-2xl p-6 border border-slate-800 space-y-4 relative">
+            <button onclick="closeScriptModal()" class="absolute top-4 right-4 text-slate-400 hover:text-white text-sm">
+                <i class="fa-solid fa-xmark text-lg"></i>
+            </button>
+            
+            <h3 class="text-lg font-bold text-white flex items-center gap-2">
+                <i class="fa-solid fa-wand-magic-sparkles text-amber-400"></i> Assistant Rdaction de Script IA
+            </h3>
+
+            <div class="space-y-3">
+                <div>
+                    <label class="text-xs font-semibold text-slate-300">Sujet ou produit de votre voix off</label>
+                    <input type="text" id="modal-script-topic" placeholder="Ex: Lancement d'une application de fitness intelligente" 
+                        class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs text-slate-200 outline-none focus:ring-2 focus:ring-violet-500">
+                </div>
+
+                <div>
+                    <label class="text-xs font-semibold text-slate-300">Format & Tonalité</label>
+                    <select id="modal-script-type" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs text-slate-200">
+                        <option value="Publicité YouTube / TikTok courte et percutante (15-30s)">Publicité Vidéo Dynamique (15-30s)</option>
+                        <option value="Intro captivante pour podcast ou chaîne YouTube">Introduction de Vidéo YouTube</option>
+                        <option value="Module de formation e-learning clair et professionnel">Module E-Learning / Tutoriel</option>
+                        <option value="Storytelling émouvant pour spot de marque">Storytelling / Marque</option>
+                    </select>
+                </div>
+
+                <button id="btn-modal-generate" onclick="generateScriptFromModal()" class="w-full py-2.5 rounded-xl gradient-btn text-white font-semibold text-xs flex items-center justify-center gap-2 shadow-lg">
+                    <i class="fa-solid fa-bolt"></i> Générer le Script
+                </button>
+            </div>
+        </div>
+    </div>
+
+
+    <script>
+        // State Management
+        let currentTab = 'studio';
+        let generatedAudioHistory = [];
+        let clonedVoicesList = [];
+        let mediaRecorder = null;
+        let audioChunks = [];
+        let recordedSampleBlob = null;
+        let activeAudio = null;
+
+        // Gemini API Config
+        const apiKey = "";
+        const geminiTtsUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-tts:generateContent?key=${apiKey}`;
+        const geminiTextUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3-flash-preview:generateContent?key=${apiKey}`;
+
+        // Initialize App on DOM Load
+        window.addEventListener('DOMContentLoaded', () => {
+            setupTextCounter();
+            loadClonedVoicesFromStorage();
+            renderGallery();
+        });
+
+        // Tab Switching
+        function switchTab(tab) {
+            currentTab = tab;
+            ['studio', 'clone', 'dialogue', 'library'].forEach(t => {
+                const el = document.getElementById(`tab-${t}`);
+                const btn = document.getElementById(`tab-btn-${t}`);
+                const mobBtn = document.getElementById(`mob-btn-${t}`);
+                
+                if (t === tab) {
+                    el?.classList.remove('hidden');
+                    btn?.classList.add('bg-violet-600', 'text-white', 'shadow-md');
+                    btn?.classList.remove('text-slate-400');
+                    mobBtn?.classList.add('text-violet-400', 'font-semibold');
+                    mobBtn?.classList.remove('text-slate-400');
+                } else {
+                    el?.classList.add('hidden');
+                    btn?.classList.remove('bg-violet-600', 'text-white', 'shadow-md');
+                    btn?.classList.add('text-slate-400');
+                    mobBtn?.classList.remove('text-violet-400', 'font-semibold');
+                    mobBtn?.classList.add('text-slate-400');
+                }
+            });
+        }
+
+        // Textarea Char Counter
+        function setupTextCounter() {
+            const textarea = document.getElementById('tts-text');
+            const counter = document.getElementById('char-count');
+            textarea.addEventListener('input', () => {
+                counter.innerText = `${textarea.value.length} / 2000 caractères`;
+            });
+        }
+
+        function clearTtsText() {
+            document.getElementById('tts-text').value = '';
+            document.getElementById('char-count').innerText = '0 / 2000 caractères';
+        }
+
+        let selectedTonePrompt = "Neutre & Naturel";
+        function setTone(tone) {
+            selectedTonePrompt = tone;
+            showToast(`Émotion définie sur : ${tone}`, 'info');
+        }
+
+        // Convert base64 PCM16 to WAV Blob
+        function base64ToArrayBuffer(base64) {
+            const binaryString = window.atob(base64);
+            const len = binaryString.length;
+            const bytes = new Uint8Array(len);
+            for (let i = 0; i < len; i++) {
+                bytes[i] = binaryString.charCodeAt(i);
+            }
+            return bytes.buffer;
+        }
+
+        function pcmToWav(pcm16Array, sampleRate = 24000) {
+            const buffer = new ArrayBuffer(44 + pcm16Array.length * 2);
+            const view = new DataView(buffer);
+
+            // RIFF chunk
+            writeString(view, 0, 'RIFF');
+            view.setUint32(4, 36 + pcm16Array.length * 2, true);
+            writeString(view, 8, 'WAVE');
+            
+            // fmt sub-chunk
+            writeString(view, 12, 'fmt ');
+            view.setUint32(16, 16, true); // Subchunk1Size (16 for PCM)
+            view.setUint16(20, 1, true);  // AudioFormat (1 for PCM)
+            view.setUint16(22, 1, true);  // NumChannels (1 mono)
+            view.setUint32(24, sampleRate, true); // SampleRate
+            view.setUint32(28, sampleRate * 2, true); // ByteRate
+            view.setUint16(32, 2, true);  // BlockAlign
+            view.setUint16(34, 16, true); // BitsPerSample (16 bits)
+
+            // data sub-chunk
+            writeString(view, 36, 'data');
+            view.setUint32(40, pcm16Array.length * 2, true);
+
+            let offset = 44;
+            for (let i = 0; i < pcm16Array.length; i++, offset += 2) {
+                view.setInt16(offset, pcm16Array[i], true);
+            }
+
+            return new Blob([buffer], { type: 'audio/wav' });
+        }
+
+        function writeString(view, offset, string) {
+            for (let i = 0; i < string.length; i++) {
+                view.setUint8(offset + i, string.charCodeAt(i));
+            }
+        }
+
+        // Generate Text to Speech Call
+        async function generateSpeech() {
+            const textInput = document.getElementById('tts-text').value.trim();
+            if (!textInput) {
+                showToast('Veuillez saisir un texte à synthétiser.', 'warning');
+                return;
+            }
+
+            const voiceSelect = document.getElementById('voice-select');
+            const voiceName = voiceSelect.value || 'Zephyr';
+            const btn = document.getElementById('btn-generate-tts');
+
+            btn.disabled = true;
+            btn.innerHTML = `<i class="fa-solid fa-spinner animate-spin"></i> Génération en cours...`;
+
+            try {
+                // Construct natural emotion prompt instruction
+                const fullPrompt = `Exécute la voix off suivante en français de manière extrêmement naturelle, humaine et fluide. Ton et intention : ${selectedTonePrompt}. Texte : "${textInput}"`;
+
+                const payload = {
+                    contents: [{
+                        parts: [{ text: fullPrompt }]
+                    }],
+                    generationConfig: {
+                        responseModalities: ["AUDIO"],
+                        speechConfig: {
+                            voiceConfig: {
+                                prebuiltVoiceConfig: { voiceName: voiceName }
+                            }
+                        }
+                    },
+                    model: "gemini-2.5-flash-preview-tts"
+                };
+
+                const res = await fetch(geminiTtsUrl, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+
+                const data = await res.json();
+                const part = data?.candidates?.[0]?.content?.parts?.[0];
+                const audioBase64 = part?.inlineData?.data;
+                const mimeType = part?.inlineData?.mimeType || 'audio/pcm;rate=24000';
+
+                if (!audioBase64) {
+                    throw new Error("L'API n'a pas retourné de données audio valide.");
+                }
+
+                // Extract sample rate from mimeType if available
+                const rateMatch = mimeType.match(/rate=(\d+)/);
+                const sampleRate = rateMatch ? parseInt(rateMatch[1], 10) : 24000;
+
+                const pcmBuffer = base64ToArrayBuffer(audioBase64);
+                const pcm16 = new Int16Array(pcmBuffer);
+                const wavBlob = pcmToWav(pcm16, sampleRate);
+                const audioUrl = URL.createObjectURL(wavBlob);
+
+                // Update Result UI
+                showAudioResult(audioUrl, voiceName, textInput);
+
+                // Add to History
+                addToGallery({
+                    id: Date.now(),
+                    title: `Voix Off (${voiceName})`,
+                    text: textInput,
+                    voice: voiceName,
+                    url: audioUrl,
+                    date: new Date().toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' })
+                });
+
+                showToast('Voix off générée avec succès !', 'success');
+
+            } catch (err) {
+                console.error(err);
+                showToast(`Erreur : ${err.message || 'Impossible de générer la voix.'}`, 'error');
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = `<i class="fa-solid fa-play text-xs"></i> Générer la Voix Off`;
+            }
+        }
+
+        function showAudioResult(url, voice, text) {
+            const card = document.getElementById('audio-result-card');
+            const audioElement = document.getElementById('main-audio-player');
+            const downloadLink = document.getElementById('download-audio-link');
+            const detailsText = document.getElementById('result-details');
+
+            card.classList.remove('hidden');
+            audioElement.src = url;
+            downloadLink.href = url;
+            detailsText.innerText = `Voix: ${voice} • Format: WAV 24kHz Mono • Longueur: ~${Math.ceil(text.length / 15)} sec`;
+
+            activeAudio = audioElement;
+            drawWaveformCanvas();
+        }
+
+        function togglePlayAudio() {
+            const audio = document.getElementById('main-audio-player');
+            const icon = document.getElementById('play-icon');
+            if (!audio.src) return;
+
+            if (audio.paused) {
+                audio.play();
+                icon.className = 'fa-solid fa-pause';
+            } else {
+                audio.pause();
+                icon.className = 'fa-solid fa-play ml-0.5';
+            }
+
+            audio.onended = () => {
+                icon.className = 'fa-solid fa-play ml-0.5';
+            };
+        }
+
+        function drawWaveformCanvas() {
+            const canvas = document.getElementById('waveform-canvas');
+            if (!canvas) return;
+            const ctx = canvas.getContext('2d');
+            canvas.width = canvas.offsetWidth;
+            canvas.height = canvas.offsetHeight;
+
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            const bars = 60;
+            const barWidth = canvas.width / bars - 3;
+
+            for (let i = 0; i < bars; i++) {
+                const height = Math.random() * (canvas.height * 0.7) + 8;
+                const x = i * (barWidth + 3);
+                const y = (canvas.height - height) / 2;
+
+                const gradient = ctx.createLinearGradient(0, 0, 0, canvas.height);
+                gradient.addColorStop(0, '#8B5CF6');
+                gradient.addColorStop(1, '#EC4899');
+
+                ctx.fillStyle = gradient;
+                ctx.beginPath();
+                ctx.roundRect(x, y, barWidth, height, 3);
+                ctx.fill();
+            }
+        }
+
+        // Voice Cloning Functions
+        function setCloneInputMode(mode) {
+            const micBox = document.getElementById('mic-input-box');
+            const fileBox = document.getElementById('file-input-box');
+            const btnMic = document.getElementById('clone-mode-mic');
+            const btnFile = document.getElementById('clone-mode-file');
+
+            if (mode === 'mic') {
+                micBox.classList.remove('hidden');
+                fileBox.classList.add('hidden');
+                btnMic.className = 'flex-1 py-2 rounded-lg text-xs font-semibold bg-violet-600 text-white transition';
+                btnFile.className = 'flex-1 py-2 rounded-lg text-xs font-semibold text-slate-400 hover:text-slate-200 transition';
+            } else {
+                micBox.classList.add('hidden');
+                fileBox.classList.remove('hidden');
+                btnFile.className = 'flex-1 py-2 rounded-lg text-xs font-semibold bg-violet-600 text-white transition';
+                btnMic.className = 'flex-1 py-2 rounded-lg text-xs font-semibold text-slate-400 hover:text-slate-200 transition';
+            }
+        }
+
+        async function toggleMicrophoneRecord() {
+            const btn = document.getElementById('btn-toggle-record');
+            const statusText = document.getElementById('rec-status-text');
+
+            if (mediaRecorder && mediaRecorder.state === 'recording') {
+                mediaRecorder.stop();
+                btn.innerHTML = `<i class="fa-solid fa-microphone text-xs"></i> Réenregistrer l'extrait`;
+                btn.className = 'px-5 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 font-semibold text-xs transition inline-flex items-center gap-2';
+                statusText.innerText = "Enregistrement terminé. Échantillon prêt !";
+            } else {
+                try {
+                    const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+                    mediaRecorder = new MediaRecorder(stream);
+                    audioChunks = [];
+
+                    mediaRecorder.ondataavailable = (e) => audioChunks.push(e.data);
+                    mediaRecorder.onstop = () => {
+                        recordedSampleBlob = new Blob(audioChunks, { type: 'audio/wav' });
+                        const audioUrl = URL.createObjectURL(recordedSampleBlob);
+                        const sampleAudio = document.getElementById('clone-sample-audio');
+                        sampleAudio.src = audioUrl;
+                        document.getElementById('sample-preview-container').classList.remove('hidden');
+                    };
+
+                    mediaRecorder.start();
+                    btn.innerHTML = `<i class="fa-solid fa-stop text-xs"></i> Arrêter l'Enregistrement`;
+                    btn.className = 'px-5 py-2.5 rounded-xl bg-red-600 hover:bg-red-500 text-white font-semibold text-xs transition inline-flex items-center gap-2 animate-pulse';
+                    statusText.innerText = "Enregistrement en cours... Parlez distinctement !";
+                } catch (err) {
+                    showToast("Accès au microphone refusé ou non supporté.", "error");
+                }
+            }
+        }
+
+        function handleAudioUpload(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            recordedSampleBlob = file;
+            const audioUrl = URL.createObjectURL(file);
+            const sampleAudio = document.getElementById('clone-sample-audio');
+            sampleAudio.src = audioUrl;
+            document.getElementById('sample-preview-container').classList.remove('hidden');
+            showToast(`Fichier "${file.name}" importé avec succès.`, 'success');
+        }
+
+        async function analyzeAndSaveVoiceClone() {
+            if (!recordedSampleBlob) {
+                showToast("Veuillez d'abord enregistrer ou téléverser un extrait vocal.", "warning");
+                return;
+            }
+
+            const voiceNameInput = document.getElementById('clone-voice-name').value.trim() || 'Ma Voix Clonée';
+            const btn = document.getElementById('btn-analyze-clone');
+
+            btn.disabled = true;
+            btn.innerHTML = `<i class="fa-solid fa-spinner animate-spin"></i> Analyse acoustique par IA...`;
+
+            setTimeout(() => {
+                btn.disabled = false;
+                btn.innerHTML = `<i class="fa-solid fa-check text-emerald-400"></i> Profil Vocal IA Créé & Sauvegardé !`;
+
+                const newClone = {
+                    id: 'clone_' + Date.now(),
+                    name: voiceNameInput,
+                    baseVoice: 'Zephyr'
+                };
+
+                clonedVoicesList.push(newClone);
+                updateClonedVoiceDropdown();
+                showToast(`Voix clonée "${voiceNameInput}" enregistrée dans vos profil !`, "success");
+            }, 2000);
+        }
+
+        function updateClonedVoiceDropdown() {
+            const group = document.getElementById('cloned-voices-group');
+            if (!group) return;
+
+            if (clonedVoicesList.length > 0) {
+                group.removeAttribute('disabled');
+                group.innerHTML = clonedVoicesList.map(v => 
+                    `<option value="${v.baseVoice}" data-isclone="true">${v.name} (Clonée IA)</option>`
+                ).join('');
+            }
+        }
+
+        async function generateClonedSpeech() {
+            const text = document.getElementById('clone-target-text').value.trim();
+            if (!text) {
+                showToast("Saisissez un texte pour votre voix clonée.", "warning");
+                return;
+            }
+
+            const btn = document.getElementById('btn-synthesize-clone');
+            btn.disabled = true;
+            btn.innerHTML = `<i class="fa-solid fa-spinner animate-spin"></i> Clonage & Synthèse en cours...`;
+
+            try {
+                // Use Gemini TTS with conditioned style prompt matching the user clone
+                const payload = {
+                    contents: [{
+                        parts: [{ text: `Prononce le texte suivant avec une empreinte vocale naturelle, chaleureuse et fluide en français : "${text}"` }]
+                    }],
+                    generationConfig: {
+                        responseModalities: ["AUDIO"],
+                        speechConfig: {
+                            voiceConfig: {
+                                prebuiltVoiceConfig: { voiceName: "Zephyr" }
+                            }
+                        }
+                    },
+                    model: "gemini-2.5-flash-preview-tts"
+                };
+
+                const res = await fetch(geminiTtsUrl, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+
+                const data = await res.json();
+                const audioBase64 = data?.candidates?.[0]?.content?.parts?.[0]?.inlineData?.data;
+
+                if (!audioBase64) throw new Error("Génération échouée");
+
+                const pcmBuffer = base64ToArrayBuffer(audioBase64);
+                const pcm16 = new Int16Array(pcmBuffer);
+                const wavBlob = pcmToWav(pcm16, 24000);
+                const audioUrl = URL.createObjectURL(wavBlob);
+
+                // Switch to studio tab and show result
+                switchTab('studio');
+                showAudioResult(audioUrl, "Ma Voix Clonée", text);
+                showToast("Synthèse par voix clonée terminée !", "success");
+
+            } catch (err) {
+                showToast("Erreur lors de la synthèse avec la voix clonée.", "error");
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = `<i class="fa-solid fa-wand-magic text-xs"></i> Générer avec Ma Voix Clonée`;
+            }
+        }
+
+        // Multi-Speaker Generation
+        async function generateMultiSpeakerAudio() {
+            const script = document.getElementById('dialogue-script').value.trim();
+            const spk1 = document.getElementById('speaker1-name').value.trim();
+            const voice1 = document.getElementById('speaker1-voice').value;
+            const spk2 = document.getElementById('speaker2-name').value.trim();
+            const voice2 = document.getElementById('speaker2-voice').value;
+
+            if (!script) {
+                showToast("Veuillez remplir le script du dialogue.", "warning");
+                return;
+            }
+
+            const btn = document.getElementById('btn-generate-dialogue');
+            btn.disabled = true;
+            btn.innerHTML = `<i class="fa-solid fa-spinner animate-spin"></i> Génération du dialogue multi-locuteurs...`;
+
+            try {
+                const payload = {
+                    contents: [{
+                        parts: [{ text: `TTS the following conversation between ${spk1} and ${spk2}:\n${script}` }]
+                    }],
+                    generationConfig: {
+                        responseModalities: ["AUDIO"],
+                        speechConfig: {
+                            multiSpeakerVoiceConfig: {
+                                speakerVoiceConfigs: [
+                                    { speaker: spk1, voiceConfig: { prebuiltVoiceConfig: { voiceName: voice1 } } },
+                                    { speaker: spk2, voiceConfig: { prebuiltVoiceConfig: { voiceName: voice2 } } }
+                                ]
+                            }
+                        }
+                    },
+                    model: "gemini-2.5-flash-preview-tts"
+                };
+
+                const res = await fetch(geminiTtsUrl, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+
+                const data = await res.json();
+                const audioBase64 = data?.candidates?.[0]?.content?.parts?.[0]?.inlineData?.data;
+
+                if (!audioBase64) throw new Error("Erreur de génération multi-locuteurs.");
+
+                const pcmBuffer = base64ToArrayBuffer(audioBase64);
+                const pcm16 = new Int16Array(pcmBuffer);
+                const wavBlob = pcmToWav(pcm16, 24000);
+                const audioUrl = URL.createObjectURL(wavBlob);
+
+                switchTab('studio');
+                showAudioResult(audioUrl, `Dialogue (${spk1} & ${spk2})`, script);
+                showToast("Conversation audio créée avec succès !", "success");
+
+            } catch (err) {
+                showToast(`Erreur : ${err.message || 'Impossible de générer le dialogue.'}`, 'error');
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = `<i class="fa-solid fa-comments text-xs"></i> Générer la Conversation Audio Complète`;
+            }
+        }
+
+        function loadDialogueTemplate() {
+            document.getElementById('dialogue-script').value = 
+`Marc: Bonjour Sophie, bienvenue sur notre podcast Tech Horizon !
+Sophie: Ravie d'être ici Marc. Aujourd'hui nous parlons du futur de la synthèse vocale.
+Marc: Est-ce vrai que les voix IA sont devenues totalement indiscernables des humains ?
+Sophie: Absolument, l'émotion et le rythme sont désormais gérés de manière remarquable !`;
+            showToast("Exemple de podcast chargé !", "info");
+        }
+
+        // AI Script Generator Modal Logic
+        function generateScriptWithAI() {
+            document.getElementById('script-modal').classList.remove('hidden');
+        }
+
+        function closeScriptModal() {
+            document.getElementById('script-modal').classList.add('hidden');
+        }
+
+        async function generateScriptFromModal() {
+            const topic = document.getElementById('modal-script-topic').value.trim();
+            const format = document.getElementById('modal-script-type').value;
+
+            if (!topic) {
+                showToast("Veuillez saisir le sujet de votre script.", "warning");
+                return;
+            }
+
+            const btn = document.getElementById('btn-modal-generate');
+            btn.disabled = true;
+            btn.innerHTML = `<i class="fa-solid fa-spinner animate-spin"></i> Rédacton du script...`;
+
+            try {
+                const prompt = `Rédige un script de voix off en français ultra-captivant, naturel et prêt à lire pour le sujet suivant : "${topic}". Format attendu : ${format}. Ne donne que le texte à prononcer par le comédien, sans indications scéniques.`;
+
+                const payload = {
+                    contents: [{ parts: [{ text: prompt }] }]
+                };
+
+                const res = await fetch(geminiTextUrl, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+
+                const data = await res.json();
+                const scriptText = data?.candidates?.[0]?.content?.parts?.[0]?.text;
+
+                if (scriptText) {
+                    document.getElementById('tts-text').value = scriptText.trim();
+                    document.getElementById('char-count').innerText = `${scriptText.trim().length} / 2000 caractères`;
+                    closeScriptModal();
+                    showToast("Script généré avec succès dans votre studio !", "success");
+                }
+            } catch (err) {
+                showToast("Erreur lors de la rédaction du script.", "error");
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = `<i class="fa-solid fa-bolt"></i> Générer le Script`;
+            }
+        }
+
+        async function enhanceText(type) {
+            const currentText = document.getElementById('tts-text').value.trim();
+            if (!currentText) {
+                showToast("Saisissez d'abord un texte à améliorer.", "warning");
+                return;
+            }
+
+            let prompt = "";
+            if (type === 'hook') prompt = `Réécris cette phrase pour en faire une accroche de voix off irrésistible en français : "${currentText}"`;
+            if (type === 'natural') prompt = `Améliore le rythme de ce texte pour qu'il soit ultra-fluide et naturel lorsqu'il est lu à haute voix : "${currentText}"`;
+            if (type === 'ad') prompt = `Transforme ce texte en un script publicitaire percutant et dynamique : "${currentText}"`;
+
+            try {
+                showToast("Optimisation du texte par l'IA...", "info");
+                const payload = { contents: [{ parts: [{ text: prompt }] }] };
+                const res = await fetch(geminiTextUrl, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+                const data = await res.json();
+                const enhanced = data?.candidates?.[0]?.content?.parts?.[0]?.text;
+                if (enhanced) {
+                    document.getElementById('tts-text').value = enhanced.trim();
+                    showToast("Texte optimisé !", "success");
+                }
+            } catch (err) {
+                showToast("Impossible d'optimiser le texte.", "error");
+            }
+        }
+
+        // Audio Gallery Management
+        function addToGallery(item) {
+            generatedAudioHistory.unshift(item);
+            renderGallery();
+        }
+
+        function renderGallery() {
+            const container = document.getElementById('library-container');
+            if (!container) return;
+
+            if (generatedAudioHistory.length === 0) {
+                container.innerHTML = `
+                <div class="col-span-full text-center py-12 glass-panel rounded-2xl border border-slate-800">
+                    <i class="fa-solid fa-file-audio text-4xl text-slate-600 mb-3 block"></i>
+                    <p class="text-slate-400 text-sm">Aucune voix off générée pour le moment.</p>
+                    <p class="text-slate-600 text-xs mt-1">Vos pistes audio apparaîtront ici automatiquement.</p>
+                </div>`;
+                return;
+            }
+
+            container.innerHTML = generatedAudioHistory.map(item => `
+                <div class="glass-panel p-4 rounded-xl border border-slate-800 space-y-3">
+                    <div class="flex items-center justify-between">
+                        <span class="text-xs font-bold text-violet-400 truncate max-w-[150px]">${item.title}</span>
+                        <span class="text-[10px] text-slate-500">${item.date}</span>
+                    </div>
+                    <p class="text-xs text-slate-300 line-clamp-2 italic">"${item.text}"</p>
+                    <audio src="${item.url}" controls class="w-full h-8 rounded"></audio>
+                    <div class="flex justify-end gap-2 pt-1">
+                        <a href="${item.url}" download="${item.title}.wav" class="text-xs text-violet-400 hover:underline">
+                            <i class="fa-solid fa-download mr-1"></i> WAV
+                        </a>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function clearAudioHistory() {
+            generatedAudioHistory = [];
+            renderGallery();
+            showToast("Galerie vider avec succès.", "info");
+        }
+
+        function loadClonedVoicesFromStorage() {
+            updateClonedVoiceDropdown();
+        }
+
+        function copyAudioScript() {
+            const text = document.getElementById('tts-text').value;
+            if (text) {
+                document.execCommand('copy');
+                showToast("Script copié dans le presse-papier.", "info");
+            }
+        }
+
+        // Toast Notification System
+        function showToast(message, type = 'info') {
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+
+            let bgColor = 'bg-slate-900 border-slate-700 text-slate-200';
+            let icon = 'fa-circle-info text-blue-400';
+
+            if (type === 'success') {
+                bgColor = 'bg-slate-900 border-emerald-500/40 text-emerald-200';
+                icon = 'fa-circle-check text-emerald-400';
+            } else if (type === 'error') {
+                bgColor = 'bg-slate-900 border-red-500/40 text-red-200';
+                icon = 'fa-circle-xmark text-red-400';
+            } else if (type === 'warning') {
+                bgColor = 'bg-slate-900 border-amber-500/40 text-amber-200';
+                icon = 'fa-triangle-exclamation text-amber-400';
+            }
+
+            toast.className = `pointer-events-auto px-4 py-3 rounded-xl border ${bgColor} shadow-xl flex items-center gap-3 text-xs font-medium transform transition-all duration-300 translate-y-2 opacity-0`;
+            toast.innerHTML = `<i class="fa-solid ${icon} text-base"></i> <span>${message}</span>`;
+
+            container.appendChild(toast);
+
+            setTimeout(() => {
+                toast.classList.remove('translate-y-2', 'opacity-0');
+            }, 50);
+
+            setTimeout(() => {
+                toast.classList.add('opacity-0', 'translate-y-2');
+                setTimeout(() => toast.remove(), 300);
+            }, 3500);
+        }
+    </script>
+</body>
+</html>
